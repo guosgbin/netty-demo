@@ -8,7 +8,7 @@ import java.nio.channels.FileChannel;
 import static cn.guosgbin.nio.ByteBufferUtil.debugAll;
 
 /**
- * 测试聚集读取
+ * 测试聚集写入
  * 聚集写入（ Gathering Writes）是指将多个 Buffer 中的数据“聚集”到 Channel。
  * 按照缓冲区的顺序，写入 position 和 limit 之间的数据到 Channel 。
  *
