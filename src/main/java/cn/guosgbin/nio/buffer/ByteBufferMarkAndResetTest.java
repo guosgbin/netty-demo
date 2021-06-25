@@ -1,8 +1,8 @@
-package cn.guosgbin.nio;
+package cn.guosgbin.nio.buffer;
 
 import java.nio.ByteBuffer;
 
-import static cn.guosgbin.nio.ByteBufferUtil.debugAll;
+import static cn.guosgbin.nio.buffer.ByteBufferUtil.debugAll;
 
 /**
  * 测试mark和reset方法

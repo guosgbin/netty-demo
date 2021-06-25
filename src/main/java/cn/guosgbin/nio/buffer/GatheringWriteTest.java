@@ -1,11 +1,11 @@
-package cn.guosgbin.nio;
+package cn.guosgbin.nio.buffer;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import static cn.guosgbin.nio.ByteBufferUtil.debugAll;
+import static cn.guosgbin.nio.buffer.ByteBufferUtil.debugAll;
 
 /**
  * 测试聚集写入

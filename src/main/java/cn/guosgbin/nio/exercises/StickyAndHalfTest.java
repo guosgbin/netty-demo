@@ -1,9 +1,8 @@
 package cn.guosgbin.nio.exercises;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
-import static cn.guosgbin.nio.ByteBufferUtil.debugAll;
+import static cn.guosgbin.nio.buffer.ByteBufferUtil.debugAll;
 
 /**
  * 测试黏包和半包

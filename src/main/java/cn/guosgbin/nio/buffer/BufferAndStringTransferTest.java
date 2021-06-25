@@ -1,10 +1,8 @@
-package cn.guosgbin.nio;
+package cn.guosgbin.nio.buffer;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
-import static cn.guosgbin.nio.ByteBufferUtil.debugAll;
 
 /**
  * 测试Buffer和String的转换

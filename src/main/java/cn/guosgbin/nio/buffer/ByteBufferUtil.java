@@ -1,4 +1,4 @@
-package cn.guosgbin.nio;
+package cn.guosgbin.nio.buffer;
 
 import io.netty.util.internal.StringUtil;
 
