@@ -10,6 +10,7 @@ import java.nio.channels.*;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 
+import static cn.guosgbin.nio.buffer.ByteBufferUtil.debugAll;
 import static cn.guosgbin.nio.buffer.ByteBufferUtil.debugRead;
 
 /**
@@ -35,6 +36,11 @@ import static cn.guosgbin.nio.buffer.ByteBufferUtil.debugRead;
  *      假如依次发送的消息比分配的buffer的长度长，就会有两次 可读 事件，
  *
  *      attachment的参数可以给每个channel一个附件对象
+ *
+ * 注意：关于半包和黏包问题，有可能客户端传输过来的数据，一次性读不完，所以需要给buffer进行扩容。
+ *
+ * 注意：可写事件 -> 在对客户端写数据的时候可能数据量比较大，可能一次发送不完，只要向channel发送数据时，
+ *              socket缓冲可写，这个事件会频繁触发，因此应当只在Socket缓冲区写不下时再关注 可写 事件，数据写完之后再取消关注
  *
  *
  * @author: Dylan kwok GSGB
@@ -72,7 +78,7 @@ public class SimpleServerTest {
             while (iterator.hasNext()) {
                 // 拿到了一个感兴趣的事件
                 SelectionKey key = iterator.next();
-                log.debug("key: {}", key);
+                log.debug("key = {}, key type = {}", key, key.interestOps());
                 if (key.isAcceptable()) { // 说明是accept事件
                     // 获取这个channel
                     ServerSocketChannel channel = (ServerSocketChannel) key.channel();
@@ -82,11 +88,12 @@ public class SimpleServerTest {
                     log.debug("获得了一个客户端的连接: {}", clientChannel);
                     // 给得到的客户端的clientChannel注册到Selector上
                     // 给每个添加一个自己的Buffer
-                    ByteBuffer privateBuffer = ByteBuffer.allocate(4);
+                    ByteBuffer privateBuffer = ByteBuffer.allocate(16);
                     SelectionKey clientKey = clientChannel.register(selector, 0, privateBuffer);
                     clientKey.interestOps(SelectionKey.OP_READ); // 设置事件为可读，因为是客户端发起的连接请求事件
-                } else if (key.isReadable()) { // 说明是可读时间
+                } else if (key.isReadable()) { // 说明是可读事件
                     try {
+                        log.debug("进入可读事件");
                         // 获得客户端的channel
                         SocketChannel channel = (SocketChannel) key.channel();
                         // 获得每个Channel自己的buffer,可能容量不够读取此次数据哦
@@ -94,11 +101,20 @@ public class SimpleServerTest {
                         // 如果是客户端正常断开，read方法会返回-1
                         int read = channel.read(buffer);
                         if (read > 0) {
-                            buffer.flip();
+//                            buffer.flip();
 //                            debugRead(buffer);
 //                            String msg = Charset.defaultCharset().decode(buffer).toString();
 //                            split();
 //                            log.debug("buffer info : {}", msg);
+                            split(buffer);
+                            // 假如buffer的大小不够一次性读取一个 \n 前的数据，则扩容
+                            if (buffer.limit() == buffer.position()) {
+                                ByteBuffer newBuffer = ByteBuffer.allocate(buffer.limit() * 2);
+                                buffer.flip();
+                                newBuffer.put(buffer);
+                                // 扩容之后的buffer放回到attachment中
+                                key.attach(newBuffer);
+                            }
                         } else if (read == -1) {
                             key.cancel(); // 取消客户端正常断开的读事件
                             channel.close();
@@ -125,17 +141,18 @@ public class SimpleServerTest {
      * @param source
      */
     public static void split(ByteBuffer source) {
+        source.flip();
         int limit = source.limit();
         for (int i = 0; i < limit; i++) {
             if (source.get(i) == '\n') {
-                ByteBuffer tempBuffer = ByteBuffer.allocate(4);
-                // 读取传入的buffer到临时的buffer中
-                source.flip();
-                // 此次读取字节数
                 int readLen = i + 1 - source.position();
+                ByteBuffer tempBuffer = ByteBuffer.allocate(readLen);
+                // 读取传入的buffer到临时的buffer中
+                // 此次读取字节数
                 for (int j = 0; j < readLen; j++) {
                     tempBuffer.put(source.get());
                 }
+                debugAll(tempBuffer);
             }
         }
         // 可能没读完

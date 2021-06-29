@@ -21,8 +21,8 @@ public class ClientTest {
 //        channel.write(Charset.defaultCharset().encode("hi"));
 //        channel.write(Charset.defaultCharset().encode("中国"));
 
-        channel.write(Charset.defaultCharset().encode("hi\n"));
-        channel.write(Charset.defaultCharset().encode("中国\n"));
+//        channel.write(Charset.defaultCharset().encode("hi\n"));
+        channel.write(Charset.defaultCharset().encode("0123456789abcdef3333\nhello\n"));
 
         System.in.read();
     }
