@@ -1,9 +1,6 @@
 package cn.guosgbin.cast.netty.component.buf;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.CompositeByteBuf;
+import io.netty.buffer.*;
 
 import static cn.guosgbin.cast.netty.component.buf.BufferLogUtil.logBuf;
 
@@ -223,6 +220,21 @@ public class ByteBufTest {
         logBuf(buf3);
     }
 
+    /**
+     * Unpooled 工具类
+     */
+    public static void unpooledTest() {
+        ByteBuf buf1 = ByteBufAllocator.DEFAULT.buffer(5);
+        buf1.writeBytes(new byte[]{1, 2, 3, 4, 5});
+        ByteBuf buf2 = ByteBufAllocator.DEFAULT.buffer(5);
+        buf2.writeBytes(new byte[]{6, 7, 8, 9, 10});
+
+
+        ByteBuf buf3 = Unpooled.wrappedBuffer(buf1, buf2);
+        System.out.println(ByteBufUtil.prettyHexDump(buf3));
+
+    }
+
 
     public static void main(String[] args) {
 //        createTest01();
@@ -234,7 +246,8 @@ public class ByteBufTest {
 //        repeatedRead();
 //        sliceTest();
 //        duplicateTest();
-        compositeByteBufTest();
+//        compositeByteBufTest();
+        unpooledTest();
     }
 
 }
