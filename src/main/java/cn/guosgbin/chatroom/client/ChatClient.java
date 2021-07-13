@@ -4,15 +4,15 @@ import cn.guosgbin.chatroom.message.*;
 import cn.guosgbin.chatroom.protocol.MessageCodecSharable;
 import cn.guosgbin.chatroom.protocol.ProcotolFrameDecoder;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelInitializer;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -39,6 +39,7 @@ public class ChatClient {
         try {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.channel(NioSocketChannel.class);
+            bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
             bootstrap.group(group);
             bootstrap.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
@@ -47,6 +48,18 @@ public class ChatClient {
                     ch.pipeline().addLast(new ProcotolFrameDecoder());
                     ch.pipeline().addLast(LOGGING_HANDLER);
                     ch.pipeline().addLast(MESSAGE_CODEC);
+                    ch.pipeline().addLast(new IdleStateHandler(0,2,1));
+                    ch.pipeline().addLast(new ChannelDuplexHandler() {
+                        @Override
+                        public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+                            IdleStateEvent event = (IdleStateEvent) evt;
+                            // 触发了写空闲事件
+                            if (event.state() == IdleState.WRITER_IDLE) {
+                                log.debug("3s 没有写数据了，发送一个心跳包");
+                                ctx.writeAndFlush(new PingMessage());
+                            }
+                        }
+                    });
                     ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                         // 会在服务端和客户端发生连接时触发
                         @Override
@@ -110,7 +123,7 @@ public class ChatClient {
                                             break;
                                         case "quit":
                                             ctx.channel().close();
-                                            break;
+                                            return;
                                     }
 
                                 }
