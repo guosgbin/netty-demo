@@ -40,7 +40,7 @@ public class Server {
                         socketChannel.register(selector, SelectionKey.OP_READ, privateBuffer);
                     } else if (key.isReadable()) {
                         // channel有可读事件
-                        key,ch
+//                        key,ch
                     }
                     iterator.remove();
                 }
