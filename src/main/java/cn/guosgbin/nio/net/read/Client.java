@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 
 /**
  * 测试read事件
@@ -11,10 +12,11 @@ import java.nio.channels.SocketChannel;
 public class Client {
     public static void main(String[] args) {
         try (SocketChannel socketChannel = SocketChannel.open()) {
-            socketChannel.configureBlocking(false);
+//            socketChannel.configureBlocking(false);
             socketChannel.connect(new InetSocketAddress(10086));
 
-            ByteBuffer buffer = ByteBuffer.allocate(16).put("憨八龟".getBytes());
+            ByteBuffer buffer = Charset.defaultCharset().encode("你好");
+            System.out.println("...");
             socketChannel.write(buffer);
         } catch (IOException e) {
             e.printStackTrace();
