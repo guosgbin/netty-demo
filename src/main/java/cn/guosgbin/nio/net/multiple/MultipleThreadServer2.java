@@ -1,22 +1,28 @@
 package cn.guosgbin.nio.net.multiple;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 多线程版本
  * Boss线程负责接收 读写事件
  * Work线程负责处理 读写事件
  */
+@Slf4j
 public class MultipleThreadServer2 {
     public static void main(String[] args) {
         try {
@@ -26,6 +32,12 @@ public class MultipleThreadServer2 {
             Selector selector = Selector.open();
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
+            Worker[] workers = new Worker[2];
+            for (int i = 0; i < workers.length; i++) {
+                workers[i] = new Worker("work-" + i);
+            }
+
+            AtomicInteger i = new AtomicInteger(0);
             while (true) {
                 int count = selector.select();
                 if (count <= 0) {
@@ -36,9 +48,13 @@ public class MultipleThreadServer2 {
                     SelectionKey key = iterator.next();
                     if (key.isAcceptable()) {
                         ServerSocketChannel ssc = (ServerSocketChannel) key.channel();
-                        ssc.configureBlocking(false);
-
+                        SocketChannel sc = ssc.accept();
+                        sc.configureBlocking(false);
+                        log.debug("client connected... {}", sc.getRemoteAddress());
+                        Worker worker = workers[i.getAndIncrement() % 2];
+                        worker.initWoker(sc);
                     }
+                    iterator.remove();
                 }
             }
 
@@ -50,7 +66,8 @@ public class MultipleThreadServer2 {
     /**
      * Worker任务对象，用于处理 读写事件
      */
-    class Worker implements Runnable {
+    @Slf4j
+    static class Worker implements Runnable {
         // 线程名
         private String name;
         // 选择器
@@ -67,8 +84,9 @@ public class MultipleThreadServer2 {
         }
 
         public void initWoker(SocketChannel sc) {
-            if (!start) {
-                try {
+
+            try {
+                if (!start) {
                     this.name = name;
                     thread = new Thread(this, name);
                     // 获得选择器
@@ -76,9 +94,9 @@ public class MultipleThreadServer2 {
                     // 开启线程
                     thread.start();
                     start = true;
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             // 添加任务到任务队列
@@ -89,6 +107,8 @@ public class MultipleThreadServer2 {
                 } catch (ClosedChannelException ignored) {
                 }
             });
+            // 唤醒selector
+            selector.wakeup();
 
         }
 
@@ -99,11 +119,24 @@ public class MultipleThreadServer2 {
                     int select = selector.select();
                     Runnable task = queue.poll();
                     if (task != null) {
-                        // 异步注册Selector
+                        // 注册可读事件到selector
                         task.run();
                     }
+                    Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+                    while (iterator.hasNext()) {
+                        SelectionKey key = iterator.next();
+                        if (key.isReadable()) {
+                            SocketChannel sc = (SocketChannel) key.channel();
+                            ByteBuffer buffer = ByteBuffer.allocate(16);
+                            int read = sc.read(buffer);
+                            buffer.flip();
+                            String data = StandardCharsets.UTF_8.decode(buffer).toString();
+                            log.debug("read data: {}", data);
+                        }
+                        iterator.remove();
+                    }
                 } catch (IOException e) {
-
+                    e.printStackTrace();
                 }
             }
         }

@@ -16,7 +16,8 @@ public class Client {
 
         SocketChannel sc = SocketChannel.open();
         sc.connect(new InetSocketAddress(10086));
-        sc.write(Charset.defaultCharset().encode("1234567890abc"));
+        sc.write(Charset.defaultCharset().encode("1234567890ab11c"));
         System.in.read();
     }
 }
+
