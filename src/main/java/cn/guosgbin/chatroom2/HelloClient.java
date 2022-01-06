@@ -1,14 +1,13 @@
 package cn.guosgbin.chatroom2;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import javafx.scene.chart.PieChart;
@@ -20,6 +19,8 @@ import java.net.InetSocketAddress;
 public class HelloClient {
 
     private static final LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
+    private static final StringEncoder STRING_ENCODER = new StringEncoder();
+
 
     public static void main(String[] args) throws InterruptedException {
         EventLoopGroup workGroup = new NioEventLoopGroup(2);
@@ -30,10 +31,16 @@ public class HelloClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast(LOGGING_HANDLER);
+                        pipeline.addLast(LOGGING_HANDLER)
+                                /*.addLast(STRING_ENCODER)*/;
                     }
                 })
                 .connect(new InetSocketAddress(10086)).sync();
+
+        Channel channel = f.channel();
+        channel.writeAndFlush("12345612345");
+        channel.writeAndFlush("61234");
+        channel.writeAndFlush("56");
 
         ChannelFuture future = f.channel().closeFuture().sync();
         future.addListener(new ChannelFutureListener() {
