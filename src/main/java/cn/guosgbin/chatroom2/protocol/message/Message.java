@@ -99,4 +99,18 @@ public class Message {
     public void setBody(String body) {
         this.body = body;
     }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "magicNumber=" + magicNumber +
+                ", mainVersion=" + mainVersion +
+                ", subVersion=" + subVersion +
+                ", modifyVersion=" + modifyVersion +
+                ", sessionId='" + sessionId + '\'' +
+                ", messageType=" + messageType +
+                ", attachments=" + attachments +
+                ", body='" + body + '\'' +
+                '}';
+    }
 }

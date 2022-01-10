@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
  * 古之立大事者，不惟有超世之才，亦必有坚忍不拔之志——苏轼
  */
 public class Constants {
-    public static final String MAGIC_NUMBER = "歪比歪比";
+    public static final int MAGIC_NUMBER = 2130;
     public static final int MAIN_VERSION = 1;
     public static final int SUB_VERSION = 1;
     public static final int MODIFY_VERSION = 1;

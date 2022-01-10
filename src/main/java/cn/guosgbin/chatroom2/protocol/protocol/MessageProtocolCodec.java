@@ -5,10 +5,14 @@ import cn.guosgbin.chatroom2.protocol.message.MessageTypeEnum;
 import cn.guosgbin.chatroom2.protocol.message.SessionIdGenerator;
 import cn.guosgbin.chatroom2.protocol.constants.Constants;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
+import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,16 +39,17 @@ import java.util.Objects;
  * 9. 消息体 body 不定 消息体，服务之间交互所发送或接受的数据，这个长度有前面的length指定
  * </p>
  */
+@Slf4j
 public class MessageProtocolCodec extends ByteToMessageCodec<Message> {
-
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Message msg, ByteBuf out) throws Exception {
+        log.debug("MessageProtocolCodec encode, msg: {}", msg);
         if (Objects.equals(msg.getMessageType(), MessageTypeEnum.EMPTY)) {
             return;
         }
         // 魔数
-        out.writeBytes(Constants.MAGIC_NUMBER.getBytes(Constants.CHARSET));
+        out.writeInt(Constants.MAGIC_NUMBER);
         // 主版本号
         out.writeByte(Constants.MAIN_VERSION);
         // 次版本号
@@ -84,9 +89,10 @@ public class MessageProtocolCodec extends ByteToMessageCodec<Message> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+//        log.debug("MessageProtocolCodec encode, byteBuf: {}", in);
         Message message = new Message();
         // 读取魔数
-        message.setMagicNumber(in.readByte());
+        message.setMagicNumber(in.readInt());
         // 读取主版本号
         message.setMainVersion(in.readByte());
         // 读取次版本号
@@ -116,5 +122,25 @@ public class MessageProtocolCodec extends ByteToMessageCodec<Message> {
         message.setBody(body);
         // 添加
         out.add(message);
+    }
+
+
+    public static void main(String[] args) throws Exception {
+        MessageProtocolCodec codec = new MessageProtocolCodec();
+        Message request = new Message();
+        request.setMessageType(MessageTypeEnum.REQUEST);
+        Map<String, String> attach = new HashMap<>(16);
+        attach.put("name", "Dylan");
+        request.setAttachments(attach);
+        request.setBody("nice to meet you!");
+
+        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.directBuffer();
+        codec.encode(null, request, byteBuf);
+
+
+        List<Object> list = new ArrayList<>(10);
+        codec.decode(null, byteBuf, list);
+
+        System.out.println(list);
     }
 }
