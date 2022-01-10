@@ -14,6 +14,7 @@ import javafx.scene.chart.PieChart;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 public class HelloClient {
@@ -31,16 +32,26 @@ public class HelloClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast(LOGGING_HANDLER)
-                                /*.addLast(STRING_ENCODER)*/;
+                        pipeline.addLast(LOGGING_HANDLER);
+//                                .addLast(STRING_ENCODER);
                     }
                 })
                 .connect(new InetSocketAddress(10086)).sync();
 
         Channel channel = f.channel();
-        channel.writeAndFlush("12345612345");
-        channel.writeAndFlush("61234");
-        channel.writeAndFlush("56");
+//        channel.writeAndFlush("12345612345");
+//        channel.writeAndFlush("61234");
+//        channel.writeAndFlus、h("56");
+        ByteBufAllocator alloc = channel.alloc();
+        ByteBuf byteBuf = alloc.directBuffer();
+        byteBuf.writeBytes("1234".getBytes(StandardCharsets.UTF_8));
+        channel.writeAndFlush(byteBuf);
+
+        ByteBuf byteBuf2 = alloc.directBuffer();
+        byteBuf2.writeBytes("56123456123".getBytes(StandardCharsets.UTF_8));
+        channel.writeAndFlush(byteBuf2);
+
+
 
         ChannelFuture future = f.channel().closeFuture().sync();
         future.addListener(new ChannelFutureListener() {
