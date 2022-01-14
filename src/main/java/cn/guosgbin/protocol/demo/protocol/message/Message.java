@@ -1,4 +1,4 @@
-package cn.guosgbin.chatroom2.protocol.message;
+package cn.guosgbin.protocol.demo.protocol.message;
 
 import java.util.Collections;
 import java.util.HashMap;

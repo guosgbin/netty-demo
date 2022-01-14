@@ -1,17 +1,15 @@
-package cn.guosgbin.chatroom2.protocol.protocol;
+package cn.guosgbin.protocol.demo.protocol.protocol;
 
-import cn.guosgbin.chatroom2.protocol.message.Message;
-import cn.guosgbin.chatroom2.protocol.message.MessageTypeEnum;
-import cn.guosgbin.chatroom2.protocol.message.SessionIdGenerator;
-import cn.guosgbin.chatroom2.protocol.constants.Constants;
+import cn.guosgbin.protocol.demo.protocol.message.Message;
+import cn.guosgbin.protocol.demo.protocol.message.MessageTypeEnum;
+import cn.guosgbin.protocol.demo.protocol.message.SessionIdGenerator;
+import cn.guosgbin.protocol.demo.protocol.constants.Constants;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

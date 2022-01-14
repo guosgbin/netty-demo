@@ -1,4 +1,4 @@
-package cn.guosgbin.chatroom2;
+package cn.guosgbin.protocol.demo;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -10,7 +10,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import javafx.scene.chart.PieChart;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;

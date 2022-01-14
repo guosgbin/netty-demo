@@ -1,6 +1,6 @@
-package cn.guosgbin.chatroom2;
+package cn.guosgbin.protocol.demo;
 
-import cn.guosgbin.chatroom2.handler.MyLoggingHandler;
+import cn.guosgbin.protocol.demo.handler.MyLoggingHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
@@ -9,11 +9,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.FixedLengthFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j

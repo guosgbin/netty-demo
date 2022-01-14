@@ -1,7 +1,7 @@
-package cn.guosgbin.chatroom2.protocol;
+package cn.guosgbin.protocol.demo.protocol;
 
-import cn.guosgbin.chatroom2.protocol.handler.ServerMessageHandler;
-import cn.guosgbin.chatroom2.protocol.protocol.MessageProtocolCodec;
+import cn.guosgbin.protocol.demo.protocol.handler.ServerMessageHandler;
+import cn.guosgbin.protocol.demo.protocol.protocol.MessageProtocolCodec;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;

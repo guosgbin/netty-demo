@@ -1,4 +1,4 @@
-package cn.guosgbin.chatroom2.protocol.constants;
+package cn.guosgbin.protocol.demo.protocol.constants;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

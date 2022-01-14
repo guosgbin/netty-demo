@@ -1,7 +1,7 @@
-package cn.guosgbin.chatroom2.protocol.handler;
+package cn.guosgbin.protocol.demo.protocol.handler;
 
-import cn.guosgbin.chatroom2.protocol.message.Message;
-import cn.guosgbin.chatroom2.protocol.message.MessageTypeEnum;
+import cn.guosgbin.protocol.demo.protocol.message.Message;
+import cn.guosgbin.protocol.demo.protocol.message.MessageTypeEnum;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;

@@ -1,6 +1,6 @@
-package cn.guosgbin.chatroom2.protocol.resolver;
+package cn.guosgbin.protocol.demo.protocol.resolver;
 
-import cn.guosgbin.chatroom2.protocol.message.Message;
+import cn.guosgbin.protocol.demo.protocol.message.Message;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

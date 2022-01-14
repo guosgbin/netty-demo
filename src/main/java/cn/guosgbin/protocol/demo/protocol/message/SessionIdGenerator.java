@@ -1,7 +1,6 @@
-package cn.guosgbin.chatroom2.protocol.message;
+package cn.guosgbin.protocol.demo.protocol.message;
 
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author: Dylan kwok GSGB

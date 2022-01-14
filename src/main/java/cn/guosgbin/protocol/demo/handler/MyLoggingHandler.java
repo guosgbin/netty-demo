@@ -1,8 +1,7 @@
-package cn.guosgbin.chatroom2.handler;
+package cn.guosgbin.protocol.demo.handler;
 
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoop;
-import io.netty.util.concurrent.EventExecutor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
